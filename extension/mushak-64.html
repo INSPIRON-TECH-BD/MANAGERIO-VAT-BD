@@ -1,0 +1,456 @@
+```D:\000. REPOS\SECTOR-CHARLIE-CONTRACTS\MANAGERIO-VAT-BD\extension\mushak-64.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mushak 6.4 — Input VAT Register | INSPIRON TECH</title>
+<style>:root{
+  --gold:#FFD700; --cyan:#00D2FF; --navy:#010409;
+  --surf:#0D1117; --bdr:#21262D; --white:#fff;
+  --green:#00A86B; --red:#DC3545;
+  --font:"Segoe UI",system-ui,sans-serif
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--navy);color:var(--white);font-size:13px}
+.hdr{background:var(--surf);border-bottom:1px solid var(--bdr);padding:10px 16px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--gold)}
+.bname{font-weight:700;font-size:13px;color:var(--gold);letter-spacing:.5px}
+.ftitle{font-size:14px;font-weight:700;color:var(--cyan)}
+.fsub{font-size:11px;color:#8B949E}
+.ctrl{background:var(--surf);border-bottom:1px solid var(--bdr);padding:10px 16px;
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.clabel{font-size:11px;color:#8B949E;text-transform:uppercase;letter-spacing:.5px}
+select,input[type=text]{background:var(--navy);border:1px solid var(--bdr);
+  color:var(--white);padding:5px 10px;border-radius:4px;font-size:12px;font-family:var(--font)}
+select:focus,input:focus{outline:1px solid var(--cyan)}
+.btn{padding:6px 14px;border-radius:4px;border:none;font-size:12px;
+  font-weight:600;cursor:pointer;transition:opacity .15s;font-family:var(--font)}
+.btn:hover{opacity:.85}
+.btn-c{background:var(--cyan);color:var(--navy)}
+.btn-g{background:var(--gold);color:var(--navy)}
+.sp{flex:1}
+.sbar{padding:6px 16px;font-size:11px;display:flex;align-items:center;gap:8px;min-height:28px}
+.sdot{width:6px;height:6px;border-radius:50%}
+.sw{background:#8B949E}
+.sl{background:var(--gold);animation:pulse 1s infinite}
+.sok{background:var(--green)}
+.se{background:var(--red)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.sumrow{display:flex;gap:10px;padding:12px 16px;flex-wrap:wrap}
+.scard{flex:1;min-width:140px;background:var(--surf);border:1px solid var(--bdr);
+  border-radius:6px;padding:10px 14px}
+.sl2{font-size:10px;color:#8B949E;text-transform:uppercase;letter-spacing:.5px}
+.sv{font-size:18px;font-weight:700;margin-top:2px}
+.sv.g{color:var(--gold)}.sv.c{color:var(--cyan)}.sv.gr{color:var(--green)}
+.sv.r{color:var(--red)}
+.twrap{padding:0 16px 16px;overflow-x:auto}
+.mhdr{border:2px solid var(--bdr);border-radius:6px 6px 0 0;
+  padding:12px 16px;background:var(--surf);margin-top:12px}
+.mhdr h2{font-size:16px;font-weight:800;color:var(--gold);
+  text-align:center;letter-spacing:1px}
+.mhdr h3{font-size:11px;color:#8B949E;text-align:center;margin-top:2px}
+.einfo{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;
+  margin-top:10px;font-size:12px;padding:0 4px}
+.ef label{color:#8B949E;font-size:10px;text-transform:uppercase;display:block}
+.ef span{color:var(--white);font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:12px;
+  background:var(--surf);border:2px solid var(--bdr);border-top:none}
+thead{background:#161B22}
+th{padding:8px 10px;text-align:left;font-size:10px;text-transform:uppercase;
+  letter-spacing:.5px;color:var(--cyan);border-bottom:1px solid var(--bdr);white-space:nowrap}
+.r{text-align:right}.cn{text-align:center}
+td{padding:7px 10px;border-bottom:1px solid var(--bdr);color:#E6EDF3;vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+.ta{font-variant-numeric:tabular-nums}
+.tv{color:var(--cyan);font-weight:600}
+.ts{color:#8B949E}
+.tfr td{background:#161B22;font-weight:700;color:var(--white);border-top:2px solid var(--bdr)}
+.tfl{color:var(--cyan);text-transform:uppercase;font-size:10px;letter-spacing:1px}
+.eflag td{background:rgba(220,53,69,.08)}
+.warn{color:var(--red);font-size:10px}
+.empty{text-align:center;padding:48px 16px;color:#8B949E}
+.ei{font-size:40px;margin-bottom:12px}
+.ftr{padding:8px 16px;border-top:1px solid var(--bdr);font-size:10px;
+  color:#8B949E;display:flex;justify-content:space-between}
+.ftr a{color:var(--cyan);text-decoration:none}
+@media print{
+  body{background:#fff;color:#000}
+  .ctrl,.ftr,.np,.sbar,.sumrow{display:none!important}
+  .hdr{background:#fff;border-bottom:2px solid #000}
+  .bname,.ftitle{color:#000}
+  .mhdr{background:#fff;border:2px solid #000}
+  .mhdr h2{color:#000}
+  table{border:2px solid #000;font-size:11px}
+  thead{background:#f0f0f0}
+  th{color:#000;border:1px solid #ccc}
+  td{color:#000;border-bottom:1px solid #eee}
+  .tfr td{background:#f0f0f0}
+  .tv{color:#000}
+  .twrap{padding:0}
+}</style>
+</head>
+<body>
+
+<!-- APP HEADER -->
+<div class="hdr">
+  <div class="brand">
+    <div class="dot"></div>
+    <span class="bname">INSPIRON TECH</span>
+  </div>
+  <div>
+    <div class="ftitle">
+      Mushak 6.4 — আগত ক্রয় রেজিস্তার
+    </div>
+    <div class="fsub">Input VAT Register (Purchases) &middot; Bangladesh NBR VAT Act 2012</div>
+  </div>
+  <div class="np" style="font-size:10px;color:#8B949E;">v1.0 &middot; managerio-vat-bd &middot; Official Manager.io Partner BD</div>
+</div>
+
+<!-- CONTROLS -->
+<div class="ctrl np">
+  <span class="clabel">Period:</span>
+  <select id="sm">
+    <option value="1">January</option>
+    <option value="2">February</option>
+    <option value="3">March</option>
+    <option value="4">April</option>
+    <option value="5">May</option>
+    <option value="6">June</option>
+    <option value="7">July</option>
+    <option value="8">August</option>
+    <option value="9">September</option>
+    <option value="10">October</option>
+    <option value="11">November</option>
+    <option value="12">December</option>
+  </select>
+  <select id="sy"></select>
+  <span class="clabel" style="margin-left:8px">Entity:</span>
+  <input type="text" id="inBiz" placeholder="Business Name" style="width:180px">
+  <input type="text" id="inBIN" placeholder="BIN (9 digits)" maxlength="13" style="width:140px">
+  <button class="btn btn-c" onclick="generate()">&#9654; Generate Mushak 6.4</button>
+  <div class="sp"></div>
+  <button class="btn btn-g np" onclick="window.print()">&#128424; Print / PDF</button>
+</div>
+
+<!-- STATUS BAR -->
+<div class="sbar">
+  <div class="sdot sw" id="sd"></div>
+  <span id="st">
+    Waiting for Manager.io context… Open this page inside Manager.io → Settings → Extensions.
+  </span>
+</div>
+
+<!-- OUTPUT -->
+<div id="out">
+  <div class="empty">
+    <div class="ei">&#128203;</div>
+    <p style="font-size:15px;margin-bottom:8px">Select period &amp; click Generate</p>
+    <small>Reads live purchase data directly from your Manager.io company</small>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="ftr np">
+  <span>Mushak 6.4 &middot; NBR VAT Act 2012 &middot; Bangladesh</span>
+  <span>
+    Built by <a href="https://inspiron.tech" target="_blank">INSPIRON TECH</a>
+    &middot; Official Manager.io Partner Bangladesh
+    &middot; <a href="https://github.com/INSPIRON-TECH-BD/MANAGERIO-VAT-BD" target="_blank">GitHub</a>
+  </span>
+</div>
+
+<script>
+// ================================================================
+// MANAGER.IO CONTEXT HANDSHAKE
+// Works with BOTH Cloud Edition and Desktop Edition.
+// Cloud:   apiEndpoint = https://xxx.manager.io
+// Desktop: apiEndpoint = http://localhost:5000
+// Auth ALWAYS received via postMessage — token NEVER hardcoded.
+// n-Law 03: Zero vendor lock-in. n-Law 04: Full audit trail.
+// ================================================================
+var EP = "", TK = "", RDY = false;
+
+window.addEventListener("message", function(e) {
+  if (!e.data || e.data.type !== "manager-context") return;
+  var p = e.data.payload;
+  if (!p || !p.apiEndpoint || !p.apiAccessToken) return;
+  EP  = p.apiEndpoint.replace(/\/+$/, "");
+  TK  = p.apiAccessToken;
+  RDY = true;
+  setStatus("ok", "Connected to Manager.io \u2014 select period and click Generate.");
+});
+
+// ================================================================
+// BANGLADESH VAT RATES
+// Source: NBR VAT Act 2012 + SROs (2025-2026)
+// n-Law 01: Zero Approximation. Never estimate. NBR source only.
+// ================================================================
+var BD_RATES = {
+  "0.15"  : "15%",
+  "0.075" : "7.5%",
+  "0.05"  : "5%",
+  "0"     : "0% (Zero-rated)"
+};
+
+function inferRate(base, vat) {
+  if (!base || base <= 0 || vat <= 0) return { pct: "\u2014", rate: 0 };
+  var r       = vat / base;
+  var rounded = Math.round(r * 1000) / 1000;
+  var pct     = BD_RATES[String(rounded)] || (Math.round(r * 1000) / 10) + "%";
+  return { pct: pct, rate: rounded };
+}
+
+// ================================================================
+// UTILITIES
+// ================================================================
+function pad(n) { return n < 10 ? "0" + n : "" + n; }
+
+function fmtDate(d) {
+  if (!d) return "";
+  var dt = new Date(d);
+  if (isNaN(dt.getTime())) return d;
+  return pad(dt.getDate()) + "/" + pad(dt.getMonth() + 1) + "/" + dt.getFullYear();
+}
+
+// BDT number formatter — BD comma convention
+// n-Law 01: Zero Approximation — correct regex, no approximation
+function fmtBDT(n) {
+  if (n === null || n === undefined || isNaN(n)) return "0.00";
+  return parseFloat(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+function validateBIN(b) {
+  if (!b) return false;
+  return b.replace(/\D/g, "").length === 9;
+}
+
+function escHtml(s) {
+  if (!s) return "";
+  return String(s)
+    .replace(/&/g,  "&amp;")
+    .replace(/</g,  "&lt;")
+    .replace(/>/g,  "&gt;")
+    .replace(/"/g,  "&quot;");
+}
+
+function setStatus(type, msg) {
+  var map = { ok: "sok", loading: "sl", error: "se", wait: "sw" };
+  document.getElementById("sd").className = "sdot " + (map[type] || "sw");
+  document.getElementById("st").textContent = msg;
+}
+
+// ================================================================
+// INIT — populate year selector, set current month
+// ================================================================
+(function initSelectors() {
+  var now = new Date();
+  var sel = document.getElementById("sy");
+  for (var y = now.getFullYear(); y >= now.getFullYear() - 5; y--) {
+    var o = document.createElement("option");
+    o.value = y; o.textContent = y;
+    sel.appendChild(o);
+  }
+  document.getElementById("sm").value = now.getMonth() + 1;
+})();
+
+// ================================================================
+// API CLIENT
+// ================================================================
+async function apiGet(path) {
+  var resp = await fetch(EP + "/api2" + path, {
+    headers: { "Authorization": "Bearer " + TK }
+  });
+  if (!resp.ok) throw new Error("API " + resp.status + " on " + path);
+  return resp.json();
+}
+
+// ================================================================
+// GENERATE — main entry point
+// ================================================================
+async function generate() {
+  if (!RDY) {
+    setStatus("error", "Not connected to Manager.io. Open this page inside Manager.io Extensions.");
+    return;
+  }
+
+  var month   = parseInt(document.getElementById("sm").value);
+  var year    = parseInt(document.getElementById("sy").value);
+  var bizBIN  = (document.getElementById("inBIN").value  || "").trim();
+  var bizName = (document.getElementById("inBiz").value  || "").trim() || "(Business Name)";
+  var lastDay = new Date(year, month, 0).getDate();
+  var sd      = year + "-" + pad(month) + "-01";
+  var ed      = year + "-" + pad(month) + "-" + lastDay;
+
+  setStatus("loading", "Fetching purchase invoices " + sd + " to " + ed + "...");
+  document.getElementById("out").innerHTML = "";
+
+  try {
+    var invoices = await apiGet(
+      "/purchase-invoices?startDate=" + sd +
+      "&endDate=" + ed +
+      "&pageSize=1000"
+    );
+
+    if (!invoices || !invoices.length) {
+      setStatus("ok", "No purchase invoices found for " + pad(month) + "/" + year);
+      document.getElementById("out").innerHTML =
+        "<div class=empty><div class=ei>&#128269;</div>" +
+        "<p>No purchase invoices found for this period.</p>" +
+        "<small>" + sd + " to " + ed + "</small></div>";
+      return;
+    }
+
+    setStatus("loading", "Processing " + invoices.length + " invoices...");
+    renderMushak64(invoices, month, year, sd, ed, bizName, bizBIN);
+
+  } catch (err) {
+    setStatus("error", "Error: " + err.message);
+    document.getElementById("out").innerHTML =
+      "<div class=empty><div class=ei>&#9888;</div><p>" + escHtml(err.message) + "</p></div>";
+  }
+}
+
+// ================================================================
+// RENDER MUSHAK 6.4
+// ================================================================
+function renderMushak64(invoices, month, year, sd, ed, bizName, bizBIN) {
+  var MONTHS = ["January","February","March","April","May","June",
+                "July","August","September","October","November","December"];
+  var periodLabel = MONTHS[month - 1] + " " + year;
+
+  // ── Build row data ──────────────────────────────────────────────
+  var rows      = [];
+  var totBase   = 0;
+  var totVAT    = 0;
+  var totGross  = 0;
+  var warnCount = 0;
+
+  invoices.forEach(function(inv, idx) {
+    // Manager.io list endpoints return camelCase
+    // n-Law 01: handle both casing conventions defensively
+    var date     = inv.date      || inv.Date      || "";
+    var ref      = inv.reference || inv.Reference || "\u2014";
+    var supplier = inv.supplier  || inv.Supplier  || "Unknown";
+    var gross    = parseFloat(inv.amount    || inv.Amount    || 0);
+    var vat      = parseFloat(inv.taxAmount || inv.TaxAmount || 0);
+    var base     = Math.round((gross - vat) * 100) / 100;
+    var ri       = inferRate(base, vat);
+    var flag     = "";
+
+    if (gross > 0 && vat === 0) { flag = "No VAT recorded"; warnCount++; }
+    if (!inv.supplier && !inv.Supplier) { flag = flag || "Missing supplier"; }
+
+    totBase  += base;
+    totVAT   += vat;
+    totGross += gross;
+
+    rows.push({
+      serial   : idx + 1,
+      date     : date,
+      ref      : ref,
+      supplier : supplier,
+      base     : base,
+      vat      : vat,
+      gross    : gross,
+      pct      : ri.pct,
+      flag     : flag
+    });
+  });
+
+  // n-Law 01: round totals once at final step only
+  totBase  = Math.round(totBase  * 100) / 100;
+  totVAT   = Math.round(totVAT   * 100) / 100;
+  totGross = Math.round(totGross * 100) / 100;
+
+  var binValid = bizBIN ? validateBIN(bizBIN) : true;
+  var binWarn  = (bizBIN && !binValid)
+    ? " <span class=warn>&#9888; BIN must be 9 digits</span>"
+    : "";
+
+  var h = [];
+
+  // ── Summary cards ───────────────────────────────────────────────
+  h.push("<div class=sumrow>");
+  h.push("<div class=scard><div class=sl2>Total Invoices</div><div class=\"sv\">" + rows.length + "</div></div>");
+  h.push("<div class=scard><div class=sl2>Taxable Purchases (BDT)</div><div class=\"sv c\">" + fmtBDT(totBase) + "</div></div>");
+  h.push("<div class=scard><div class=sl2>Input VAT Credit (BDT)</div><div class=\"sv g\">" + fmtBDT(totVAT) + "</div></div>");
+  h.push("<div class=scard><div class=sl2>Gross Total (BDT)</div><div class=\"sv gr\">" + fmtBDT(totGross) + "</div></div>");
+  if (warnCount > 0) {
+    h.push("<div class=scard><div class=sl2>Warnings</div><div class=\"sv r\">" + warnCount + " invoices</div></div>");
+  }
+  h.push("</div>");
+
+  // ── Mushak 6.4 header ───────────────────────────────────────────
+  h.push("<div class=twrap>");
+  h.push("<div class=mhdr>");
+  h.push("<h2>মুসক ফরম &mdash; 6.4 &nbsp;|&nbsp; MUSHAK FORM 6.4</h2>");
+  h.push("<h3>Input VAT Register (Purchases) &bull; " + escHtml(periodLabel) + " &bull; NBR VAT Act 2012</h3>");
+  h.push("<div class=einfo>");
+  h.push("<div class=ef><label>Business Name ব্যবসা</label><span>" + escHtml(bizName) + "</span></div>");
+  h.push("<div class=ef><label>BIN নাম্বার</label><span>" + escHtml(bizBIN || "\u2014") + binWarn + "</span></div>");
+  h.push("<div class=ef><label>Period সময়কাল</label><span>" + sd + " to " + ed + "</span></div>");
+  h.push("</div></div>");
+
+  // ── Table ───────────────────────────────────────────────────────
+  h.push("<table>");
+  h.push("<thead><tr>");
+  h.push("<th class=cn>ক্রমিক # Serial</th>");
+  h.push("<th>তারিখ Date</th>");
+  h.push("<th>চালান No. Invoice</th>");
+  h.push("<th>সরবরাহকারী নাম Supplier</th>");
+  h.push("<th>পণ্য / সেবা Description</th>");
+  h.push("<th class=r>মূল্য Base Value (BDT)</th>");
+  h.push("<th class=cn>মুসক হার VAT %</th>");
+  h.push("<th class=r>মুসক VAT Amount (BDT)</th>");
+  h.push("<th class=r>মোট Total (BDT)</th>");
+  h.push("</tr></thead><tbody>");
+
+  rows.forEach(function(row) {
+    var cls = row.flag ? " class=eflag" : "";
+    h.push("<tr" + cls + ">");
+    h.push("<td class=\"ts cn\">" + row.serial + "</td>");
+    h.push("<td>" + fmtDate(row.date) + "</td>");
+    h.push("<td>" + escHtml(row.ref) + "</td>");
+    h.push("<td>" + escHtml(row.supplier) + "</td>");
+    var desc = row.flag
+      ? "<span class=warn>&#9888; " + escHtml(row.flag) + "</span>"
+      : "Purchase / ক্রয়";
+    h.push("<td>" + desc + "</td>");
+    h.push("<td class=\"r ta\">" + fmtBDT(row.base) + "</td>");
+    h.push("<td class=cn>" + row.pct + "</td>");
+    h.push("<td class=\"r ta tv\">" + fmtBDT(row.vat) + "</td>");
+    h.push("<td class=\"r ta\">" + fmtBDT(row.gross) + "</td>");
+    h.push("</tr>");
+  });
+
+  h.push("</tbody>");
+  h.push("<tfoot><tr class=tfr>");
+  h.push("<td colspan=5 class=tfl>মাসিক সর্বমোট Monthly Total (Taka)</td>");
+  h.push("<td class=\"r ta\">" + fmtBDT(totBase) + "</td>");
+  h.push("<td></td>");
+  h.push("<td class=\"r ta tv\">" + fmtBDT(totVAT) + "</td>");
+  h.push("<td class=\"r ta\">" + fmtBDT(totGross) + "</td>");
+  h.push("</tr></tfoot></table>");
+
+  h.push("<div style=\"font-size:10px;color:#8B949E;padding:8px 2px;border-top:1px solid #21262D;margin-top:4px\">");
+  h.push("Generated: " + (new Date().toLocaleString()) + " &bull; ");
+  h.push("Powered by <strong>INSPIRON TECH</strong> &bull; ");
+  h.push("<a href=\"https://inspiron.tech\" target=\"_blank\" style=\"color:#00D2FF\">inspiron.tech</a> &bull; ");
+  h.push("Bangladesh NBR VAT Act 2012 &bull; managerio-vat-bd v1.0");
+  h.push("</div></div>");
+
+  document.getElementById("out").innerHTML = h.join("");
+
+  setStatus("ok",
+    "Mushak 6.4 ready: " + rows.length + " invoices | " +
+    "Input VAT Credit: BDT " + fmtBDT(totVAT) + " | " +
+    "Warnings: " + warnCount
+  );
+}
+</script>
+</body>
+</html>
