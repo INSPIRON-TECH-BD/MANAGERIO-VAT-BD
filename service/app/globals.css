@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --navy-black:    #010409;
+    --action-gold:   #FFD700;
+    --electric-cyan: #00D2FF;
+    --navy-deep:     #002147;
+    --cyan-20: rgba(0,210,255,0.20);
+    --cyan-10: rgba(0,210,255,0.10);
+    --gold-20: rgba(255,215,0,0.20);
+    --gold-10: rgba(255,215,0,0.10);
+    --white-05: rgba(255,255,255,0.04);
+    --white-08: rgba(255,255,255,0.08);
+  }
+}
+
+/* NEO SANS PRO - FULL FONT FAMILY */
+@font-face { font-family: 'Neo Sans Pro'; src: url('/fonts/NeoSansPro-Light.woff') format('woff'); font-weight: 300; font-style: normal; }
+@font-face { font-family: 'Neo Sans Pro'; src: url('/fonts/NeoSansPro-LightItalic.woff') format('woff'); font-weight: 300; font-style: italic; }
+@font-face { font-family: 'Neo Sans Pro'; src: url('/fonts/NeoSansPro-Regular.woff') format('woff'); font-weight: 400; font-style: normal; }
+@font-face { font-family: 'Neo Sans Pro'; src: url('/fonts/NeoSansPro-Italic.woff') format('woff'); font-weight: 400; font-style: italic; }
+@font-face { font-family: 'Neo Sans Pro'; src: url('/fonts/NeoSansPro-Medium.woff') format('woff'); font-weight: 500; font-style: normal; }
+@font-face { font-family: 'Neo Sans Pro'; src: url('/fonts/NeoSansPro-Bold.woff') format('woff'); font-weight: 700; font-style: normal; }
+@font-face { font-family: 'Neo Sans Pro'; src: url('/fonts/NeoSansPro-BoldItalic.woff') format('woff'); font-weight: 700; font-style: italic; }
+@font-face { font-family: 'Neo Sans Pro'; src: url('/fonts/NeoSansPro-Ultra.woff') format('woff'); font-weight: 900; font-style: normal; }
+
+body {
+  background: var(--navy-black);
+  color: #fff;
+  font-family: 'Neo Sans Pro', sans-serif;
+  min-height: 100vh;
+  background-image: radial-gradient(rgba(0,210,255,0.06) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* CYBER INFRASTRUCTURE UTILITIES */
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.35} }
+.dot-live {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #00FF88; box-shadow: 0 0 8px #00FF88;
+  animation: blink 2s ease-in-out infinite;
+}
+
+.eyebrow {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--electric-cyan); font-family: monospace;
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+}
+.eyebrow::before, .eyebrow::after { content:''; display:block; height:1px; width:40px; background:var(--cyan-20); }
+
+.section-label {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase;
+  color: rgba(255,255,255,0.2); font-family: monospace; display: flex; align-items: center; gap: 12px;
+}
+.section-label::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.05); }
+
+.tool-card {
+  background: var(--white-05);
+  border: 1px solid var(--cyan-20);
+  border-radius: 16px;
+  position: relative; overflow: hidden;
+  transition: transform 0.25s, border-color 0.25s, background 0.25s;
+}
+.tool-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--electric-cyan), transparent);
+  opacity: 0.35;
+}
+.tool-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(0,210,255,0.45);
+  background: var(--white-08);
+}
+.tool-card.gold { border-color: var(--gold-20); }
+.tool-card.gold::before { background: linear-gradient(90deg, transparent, var(--action-gold), transparent); }
+.tool-card.gold:hover { border-color: rgba(255,215,0,0.45); }
+
+.tag {
+  font-size: 9px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 3px 9px; border-radius: 20px; font-family: monospace;
+  background: var(--cyan-10); color: var(--electric-cyan); border: 1px solid var(--cyan-20);
+}
+.tag-gold { background: var(--gold-10); color: var(--action-gold); border-color: var(--gold-20); }
