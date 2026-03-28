@@ -164,24 +164,46 @@ tr:hover td{background:rgba(255,255,255,.02)}
 
 <script>
 // ================================================================
-// MANAGER.IO CONTEXT HANDSHAKE
-// Works with BOTH Cloud Edition and Desktop Edition.
-// Cloud:   apiEndpoint = https://xxx.manager.io
-// Desktop: apiEndpoint = http://localhost:5000
-// Auth ALWAYS received via postMessage — token NEVER hardcoded.
+// MANAGER.IO API3 HANDSHAKE & PROTOCOL
 // n-Law 03: Zero vendor lock-in. n-Law 04: Full audit trail.
 // ================================================================
-var EP = "", TK = "", RDY = false;
+var apiEndpoint = null;
+var context = null;
 
-window.addEventListener("message", function(e) {
-  if (!e.data || e.data.type !== "manager-context") return;
-  var p = e.data.payload;
-  if (!p || !p.apiEndpoint || !p.apiAccessToken) return;
-  EP  = p.apiEndpoint.replace(/\/+$/, "");
-  TK  = p.apiAccessToken;
-  RDY = true;
-  setStatus("ok", "Connected to Manager.io \u2014 select period and click Generate.");
-});
+function sendMessage(msg) {
+  return new Promise(function(resolve) {
+    var requestId = 'req_' + Math.random().toString(36).substring(2);
+    var handler = function(e) {
+      if (e.source !== window.parent || !e.data || e.data.requestId !== requestId) return;
+      window.removeEventListener('message', handler);
+      resolve(e.data);
+    };
+    window.addEventListener('message', handler);
+    var payload = Object.assign({}, msg, { requestId: requestId });
+    window.parent.postMessage(payload, "*");
+  });
+}
+
+function initAPI() {
+  return new Promise(function(resolve) {
+    var handler = function(e) {
+      if (e.source !== window.parent || !e.data) return;
+      if (e.data.type === "context-response") {
+        window.removeEventListener('message', handler);
+        context = e.data.body;
+        apiEndpoint = context.apiEndpoint || "";
+        setStatus("ok", "Connected to Manager.io \u2014 select period and click Generate.");
+        resolve();
+      }
+    };
+    window.addEventListener('message', handler);
+    window.parent.postMessage({ type: "context-request" }, "*");
+  });
+}
+
+window.onload = function() {
+  initAPI();
+};
 
 // ================================================================
 // BANGLADESH VAT RATES
@@ -215,11 +237,10 @@ function fmtDate(d) {
   return pad(dt.getDate()) + "/" + pad(dt.getMonth() + 1) + "/" + dt.getFullYear();
 }
 
-// BDT number formatter — BD comma convention
-// n-Law 01: Zero Approximation — correct regex, no approximation
+// BDT number formatter — BD/IN comma convention (n-Law 01)
 function fmtBDT(n) {
   if (n === null || n === undefined || isNaN(n)) return "0.00";
-  return parseFloat(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return parseFloat(n).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 function validateBIN(b) {
@@ -257,21 +278,20 @@ function setStatus(type, msg) {
 })();
 
 // ================================================================
-// API CLIENT
+// API CLIENT (API3)
 // ================================================================
 async function apiGet(path) {
-  var resp = await fetch(EP + "/api2" + path, {
-    headers: { "Authorization": "Bearer " + TK }
-  });
-  if (!resp.ok) throw new Error("API " + resp.status + " on " + path);
-  return resp.json();
+  if (!context) await initAPI();
+  var res = await sendMessage({ type: "api-request", path: path, method: "GET", body: null });
+  if (res.status !== 200) throw new Error((res.statusText || 'API Error') + " on " + path);
+  return res.body;
 }
 
 // ================================================================
 // GENERATE — main entry point
 // ================================================================
 async function generate() {
-  if (!RDY) {
+  if (!context) {
     setStatus("error", "Not connected to Manager.io. Open this page inside Manager.io Extensions.");
     return;
   }
@@ -288,11 +308,12 @@ async function generate() {
   document.getElementById("out").innerHTML = "";
 
   try {
-    var invoices = await apiGet(
-      "/purchase-invoices?startDate=" + sd +
+    var rawData = await apiGet(
+      "/api2/purchase-invoices?startDate=" + sd +
       "&endDate=" + ed +
       "&pageSize=1000"
     );
+    var invoices = rawData.rows || rawData || [];
 
     if (!invoices || !invoices.length) {
       setStatus("ok", "No purchase invoices found for " + pad(month) + "/" + year);
@@ -449,6 +470,13 @@ function renderMushak64(invoices, month, year, sd, ed, bizName, bizBIN) {
     "Input VAT Credit: BDT " + fmtBDT(totVAT) + " | " +
     "Warnings: " + warnCount
   );
+
+  // Auto-resize iframe in Manager.io
+  window.parent.postMessage({
+    type: "resize",
+    width: document.documentElement.scrollWidth,
+    height: document.documentElement.scrollHeight + 40
+  }, "*");
 }
 </script>
 </body>

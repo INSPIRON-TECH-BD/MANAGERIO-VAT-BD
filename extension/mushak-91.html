@@ -5,136 +5,170 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mushak 9.1 - Monthly VAT Return | Manager.io</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
-        
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        /* ── Sovereign Brand Tokens (Kinetic Palette v1.2.0) ── */
         :root {
-            --bg: #1e1e1e;
-            --card: #2d2d2d;
-            --text: #e0e0e0;
-            --accent: #00d4aa;
+            --navy:  #010409;   /* deep-navy-black */
+            --surf:  #0D1117;
+            --bdr:   #21262D;
+            --gold:  #FFD700;   /* action-gold */
+            --cyan:  #00D2FF;   /* electric-cyan */
+            --green: #00A86B;
+            --red:   #DC3545;
+            --white: #FFFFFF;
+            --muted: #8B949E;
+            --font:  'Inter', system-ui, sans-serif;
         }
-        
+
         * { margin:0; padding:0; box-sizing:border-box; }
         body {
-            font-family: 'Inter', system-ui, sans-serif;
-            background: var(--bg);
-            color: var(--text);
+            font-family: var(--font);
+            background: var(--navy);
+            color: var(--white);
             padding: 20px;
             line-height: 1.5;
+            font-size: 13px;
         }
-        
+
         .container { max-width: 1000px; margin: 0 auto; }
-        
+
         header {
-            background: var(--card);
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 24px;
+            background: var(--surf);
+            border: 1px solid var(--bdr);
+            padding: 16px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
-        
-        h1 { font-size: 1.6rem; font-weight: 600; }
-        .subtitle { font-size: 0.95rem; opacity: 0.8; }
-        
+
+        .brand { display: flex; align-items: center; gap: 8px; }
+        .dot   { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); }
+        .bname { font-weight: 700; font-size: 13px; color: var(--gold); letter-spacing: .5px; }
+        .ftitle { font-size: 15px; font-weight: 700; color: var(--cyan); }
+        .fsub   { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
         .controls {
-            background: var(--card);
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 24px;
+            background: var(--surf);
+            border: 1px solid var(--bdr);
+            padding: 14px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
             display: flex;
             gap: 16px;
             flex-wrap: wrap;
-            align-items: end;
+            align-items: flex-end;
         }
-        
-        .form-group { flex: 1; min-width: 180px; }
-        label { display: block; margin-bottom: 6px; font-size: 0.9rem; opacity: 0.9; }
-        select, button {
+
+        .form-group { flex: 1; min-width: 160px; }
+        label { display: block; margin-bottom: 5px; font-size: 11px; color: var(--muted);
+                text-transform: uppercase; letter-spacing: .5px; }
+        select {
             width: 100%;
-            padding: 12px 16px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
+            background: var(--navy);
+            border: 1px solid var(--bdr);
+            color: var(--white);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-family: var(--font);
         }
-        select { background: #3a3a3a; color: var(--text); }
-        
+        select:focus { outline: 1px solid var(--cyan); }
+
         button {
-            background: var(--accent);
-            color: #000;
-            font-weight: 600;
+            padding: 9px 18px;
+            background: var(--cyan);
+            color: var(--navy);
+            border: none;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 12px;
             cursor: pointer;
             transition: all 0.2s;
+            font-family: var(--font);
+            white-space: nowrap;
         }
-        button:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,212,170,0.3); }
-        
+        button:hover { opacity: .85; transform: translateY(-1px); }
+
         .result {
-            background: var(--card);
-            border-radius: 12px;
-            padding: 28px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            background: var(--surf);
+            border: 1px solid var(--bdr);
+            border-radius: 10px;
+            padding: 24px;
         }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-        th, td {
-            padding: 16px;
-            text-align: left;
-            border-bottom: 1px solid #444;
-        }
-        th { background: #252525; font-weight: 500; }
-        
+
+        table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 12px; }
+        th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--bdr); }
+        th { background: #161B22; font-size: 10px; text-transform: uppercase;
+             letter-spacing: .5px; color: var(--cyan); font-weight: 600; }
+        td { color: #E6EDF3; }
+        td:last-child, th:last-child { text-align: right; }
+
         .section-title {
-            font-size: 1.2rem;
-            margin: 28px 0 12px;
-            padding-bottom: 8px;
-            border-bottom: 2px solid var(--accent);
-        }
-        
-        .net-payable {
-            font-size: 1.8rem;
+            font-size: 12px;
             font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--cyan);
+            margin: 24px 0 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--bdr);
+        }
+
+        .net-payable {
+            font-size: 1.6rem;
+            font-weight: 800;
             padding: 20px;
-            border-radius: 12px;
+            border-radius: 10px;
             text-align: center;
             margin: 20px 0;
+            letter-spacing: 1px;
         }
-        .positive { background: #00d4aa; color: #000; }
-        .negative { background: #ff4d4d; color: #fff; }
-        
+        .positive { background: var(--gold);  color: var(--navy); }
+        .negative { background: var(--red);   color: var(--white); }
+
         .footer {
-            margin-top: 40px;
-            font-size: 0.85rem;
-            opacity: 0.7;
+            margin-top: 32px;
+            font-size: 10px;
+            color: var(--muted);
             text-align: center;
+            border-top: 1px solid var(--bdr);
+            padding-top: 12px;
         }
-        
+
+        .status {
+            margin: 10px 0;
+            font-size: 11px;
+            min-height: 20px;
+            color: var(--muted);
+        }
+
         @media print {
-            body { background: white; color: black; padding: 0; }
-            .controls, button, .no-print { display: none !important; }
-            .result { box-shadow: none; }
+            body { background: #fff; color: #000; padding: 0; }
+            .controls, button { display: none !important; }
+            header { background: #fff; border: 2px solid #000; }
+            .bname, .ftitle { color: #000; }
+            .result { box-shadow: none; border: 1px solid #ccc; }
             .net-payable { border: 3px solid #000; }
+            th { color: #000; background: #f0f0f0; }
+            .section-title { color: #000; border-bottom: 2px solid #000; }
         }
-        
-        .status { margin-top: 12px; font-size: 0.9rem; min-height: 22px; }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
+            <div class="brand">
+                <div class="dot"></div>
+                <span class="bname">INSPIRON TECH</span>
+            </div>
             <div>
-                <h1>Mushak 9.1</h1>
-                <div class="subtitle">Monthly VAT Return • ভ্যাট মাসিক রিটার্ন</div>
+                <div class="ftitle">Mushak 9.1 — ভ্যাট মাসিক রিটার্ন</div>
+                <div class="fsub">Monthly VAT Return &middot; Bangladesh NBR VAT Act 2012</div>
             </div>
-            <div style="text-align:right">
-                <div style="font-size:0.9rem; opacity:0.8;">INSPIRON TECH BD</div>
-                <div style="font-size:1.1rem; font-weight:600;">v1.0</div>
-            </div>
+            <div style="font-size:10px;color:#8B949E;">v1.0 &middot; managerio-vat-bd</div>
         </header>
 
         <div class="controls">

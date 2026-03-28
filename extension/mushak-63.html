@@ -164,24 +164,46 @@ tr:hover td{background:rgba(255,255,255,.02)}
 
 <script>
 // ================================================================
-// MANAGER.IO CONTEXT HANDSHAKE
-// Works with BOTH Cloud Edition and Desktop Edition.
-// Cloud:   apiEndpoint = https://xxx.manager.io
-// Desktop: apiEndpoint = http://localhost:5000
-// Auth ALWAYS received via postMessage — token NEVER hardcoded.
+// MANAGER.IO API3 HANDSHAKE & PROTOCOL
 // n-Law 03: Zero vendor lock-in. n-Law 04: Full audit trail.
 // ================================================================
-var EP = "", TK = "", RDY = false;
+var apiEndpoint = null;
+var context = null;
 
-window.addEventListener("message", function(e) {
-  if (!e.data || e.data.type !== "manager-context") return;
-  var p = e.data.payload;
-  if (!p || !p.apiEndpoint || !p.apiAccessToken) return;
-  EP  = p.apiEndpoint.replace(/\/+$/, "");
-  TK  = p.apiAccessToken;
-  RDY = true;
-  setStatus("ok", "Connected to Manager.io \u2014 select period and click Generate.");
-});
+function sendMessage(msg) {
+  return new Promise(function(resolve) {
+    var requestId = 'req_' + Math.random().toString(36).substring(2);
+    var handler = function(e) {
+      if (e.source !== window.parent || !e.data || e.data.requestId !== requestId) return;
+      window.removeEventListener('message', handler);
+      resolve(e.data);
+    };
+    window.addEventListener('message', handler);
+    var payload = Object.assign({}, msg, { requestId: requestId });
+    window.parent.postMessage(payload, "*");
+  });
+}
+
+function initAPI() {
+  return new Promise(function(resolve) {
+    var handler = function(e) {
+      if (e.source !== window.parent || !e.data) return;
+      if (e.data.type === "context-response") {
+        window.removeEventListener('message', handler);
+        context = e.data.body;
+        apiEndpoint = context.apiEndpoint || "";
+        setStatus("ok", "Connected to Manager.io \u2014 select period and click Generate.");
+        resolve();
+      }
+    };
+    window.addEventListener('message', handler);
+    window.parent.postMessage({ type: "context-request" }, "*");
+  });
+}
+
+window.onload = function() {
+  initAPI();
+};
 
 // ================================================================
 // BANGLADESH VAT RATES
@@ -215,10 +237,10 @@ function fmtDate(d) {
   return pad(dt.getDate()) + "/" + pad(dt.getMonth() + 1) + "/" + dt.getFullYear();
 }
 
-// BDT number formatter — BD comma convention
+// BDT number formatter — BD/IN comma convention (n-Law 01)
 function fmtBDT(n) {
   if (n === null || n === undefined || isNaN(n)) return "0.00";
-  return parseFloat(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return parseFloat(n).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 function validateBIN(b) {
@@ -256,21 +278,20 @@ function setStatus(type, msg) {
 })();
 
 // ================================================================
-// API CLIENT
+// API CLIENT (API3)
 // ================================================================
 async function apiGet(path) {
-  var resp = await fetch(EP + "/api2" + path, {
-    headers: { "Authorization": "Bearer " + TK }
-  });
-  if (!resp.ok) throw new Error("API " + resp.status + " on " + path);
-  return resp.json();
+  if (!context) await initAPI();
+  var res = await sendMessage({ type: "api-request", path: path, method: "GET", body: null });
+  if (res.status !== 200) throw new Error((res.statusText || 'API Error') + " on " + path);
+  return res.body;
 }
 
 // ================================================================
 // GENERATE — main entry point
 // ================================================================
 async function generate() {
-  if (!RDY) {
+  if (!context) {
     setStatus("error", "Not connected to Manager.io. Open this page inside Manager.io Extensions.");
     return;
   }
@@ -287,11 +308,12 @@ async function generate() {
   document.getElementById("out").innerHTML = "";
 
   try {
-    var invoices = await apiGet(
-      "/sales-invoices?startDate=" + sd +
+    var rawData = await apiGet(
+      "/api2/sales-invoices?startDate=" + sd +
       "&endDate=" + ed +
       "&pageSize=1000"
     );
+    var invoices = rawData.rows || rawData || [];
 
     if (!invoices || !invoices.length) {
       setStatus("ok", "No sales invoices found for " + pad(month) + "/" + year);
@@ -372,70 +394,70 @@ function renderMushak63(invoices, month, year, sd, ed, bizName, bizBIN) {
   // ── Summary cards ───────────────────────────────────────────────
   h.push("<div class=sumrow>");
   h.push("<div class=scard><div class=sl2>Total Invoices</div><div class=sv>" + rows.length + "</div></div>");
-  h.push("<div class=scard><div class=sl2>Taxable Sales (BDT)</div><div class="sv c">" + fmtBDT(totBase) + "</div></div>");
-  h.push("<div class=scard><div class=sl2>Output VAT (BDT)</div><div class="sv g">" + fmtBDT(totVAT) + "</div></div>");
-  h.push("<div class=scard><div class=sl2>Gross Total (BDT)</div><div class="sv gr">" + fmtBDT(totGross) + "</div></div>");
+  h.push("<div class=\"scard\"><div class=\"sl2\">Taxable Sales (BDT)</div><div class=\"sv c\">" + fmtBDT(totBase) + "</div></div>");
+  h.push("<div class=\"scard\"><div class=\"sl2\">Output VAT (BDT)</div><div class=\"sv g\">" + fmtBDT(totVAT) + "</div></div>");
+  h.push("<div class=\"scard\"><div class=\"sl2\">Gross Total (BDT)</div><div class=\"sv gr\">" + fmtBDT(totGross) + "</div></div>");
   if (warnCount > 0) {
-    h.push("<div class=scard><div class=sl2>Warnings</div><div class="sv r">" + warnCount + " invoices</div></div>");
+    h.push("<div class=\"scard\"><div class=\"sl2\">Warnings</div><div class=\"sv r\">" + warnCount + " invoices</div></div>");
   }
   h.push("</div>");
 
   // ── Mushak 6.3 header ───────────────────────────────────────────
-  h.push("<div class=twrap>");
-  h.push("<div class=mhdr>");
-  h.push("<h2>&#2478;&#2497;&#2488;&#2453; &#2467;&#2494;&#2451;&#2494;&#2480;&#2487;&#2494;&#2480; &mdash; 6.3 &nbsp;|&nbsp; MUSHAK FORM 6.3</h2>");
+  h.push("<div class=\"twrap\">");
+  h.push("<div class=\"mhdr\">");
+  h.push("<h2>মুসক ফরম &mdash; 6.3 &nbsp;|&nbsp; MUSHAK FORM 6.3</h2>");
   h.push("<h3>Output VAT Register (Sales) &bull; " + escHtml(periodLabel) + " &bull; NBR VAT Act 2012</h3>");
-  h.push("<div class=einfo>");
-  h.push("<div class=ef><label>Business Name &#2476;&#2509;&#2479;&#2476;&#2488;&#2494;</label><span>" + escHtml(bizName) + "</span></div>");
-  h.push("<div class=ef><label>BIN &#2472;&#2494;&#2478;&#2509;&#2476;&#2494;&#2480;</label><span>" + escHtml(bizBIN || "\u2014") + binWarn + "</span></div>");
-  h.push("<div class=ef><label>Period &#2456;&#2478;&#2479;&#2492;&#2453;&#2494;&#2354;</label><span>" + sd + " to " + ed + "</span></div>");
+  h.push("<div class=\"einfo\">");
+  h.push("<div class=\"ef\"><label>Business Name &#2476;&#2509;&#2479;&#2476;&#2488;&#2494;</label><span>" + escHtml(bizName) + "</span></div>");
+  h.push("<div class=\"ef\"><label>BIN &#2472;&#2494;&#2478;&#2509;&#2476;&#2494;&#2480;</label><span>" + escHtml(bizBIN || "\u2014") + binWarn + "</span></div>");
+  h.push("<div class=\"ef\"><label>Period &#2456;&#2478;&#2479;&#2492;&#2453;&#2494;&#2354;</label><span>" + sd + " to " + ed + "</span></div>");
   h.push("</div></div>");
 
   // ── Table ───────────────────────────────────────────────────────
   h.push("<table>");
   h.push("<thead><tr>");
-  h.push("<th class=cn>&#2325;&#2381;&#2352;&#2478;&#2495;&#2453; # Serial</th>");
+  h.push("<th class=\"cn\">&#2325;&#2381;&#2352;&#2478;&#2495;&#2453; # Serial</th>");
   h.push("<th>&#2468;&#2494;&#2480;&#2495;&#2454; Date</th>");
   h.push("<th>&#2458;&#2494;&#2482;&#2494;&#2472; No. Invoice</th>");
   h.push("<th>&#2453;&#2381;&#2480;&#2503;&#2468;&#2494;&#2480; &#2472;&#2494;&#2478; Buyer</th>");
   h.push("<th>&#2474;&#2467;&#2509;&#2479; / &#2488;&#2503;&#2476;&#2494; Description</th>");
-  h.push("<th class=r>&#2478;&#2482;&#2509;&#2479; Base Value (BDT)</th>");
-  h.push("<th class=cn>&#2478;&#2496;&#2488;&#2453; &#2489;&#2494;&#2480; VAT %</th>");
-  h.push("<th class=r>&#2478;&#2496;&#2488;&#2453; VAT Amount (BDT)</th>");
-  h.push("<th class=r>&#2478;&#2507;&#2463; Total (BDT)</th>");
+  h.push("<th class=\"r\">&#2478;&#2482;&#2509;&#2479; Base Value (BDT)</th>");
+  h.push("<th class=\"cn\">&#2478;&#2496;&#2488;&#2453; &#2489;&#2494;&#2480; VAT %</th>");
+  h.push("<th class=\"r\">&#2478;&#2496;&#2488;&#2453; VAT Amount (BDT)</th>");
+  h.push("<th class=\"r\">&#2478;&#2507;&#2463; Total (BDT)</th>");
   h.push("</tr></thead><tbody>");
 
   rows.forEach(function(row) {
-    var cls = row.flag ? " class=eflag" : "";
+    var cls = row.flag ? " class=\"eflag\"" : "";
     h.push("<tr" + cls + ">");
-    h.push("<td class="ts cn">" + row.serial + "</td>");
+    h.push("<td class=\"ts cn\">" + row.serial + "</td>");
     h.push("<td>" + fmtDate(row.date) + "</td>");
     h.push("<td>" + escHtml(row.ref) + "</td>");
     h.push("<td>" + escHtml(row.buyer) + "</td>");
     var desc = row.flag
-      ? "<span class=warn>&#9888; " + escHtml(row.flag) + "</span>"
+      ? "<span class=\"warn\">&#9888; " + escHtml(row.flag) + "</span>"
       : "Sales / &#2476;&#2495;&#2453;&#2509;&#2480;&#2479;&#2492;";
     h.push("<td>" + desc + "</td>");
-    h.push("<td class="r ta">" + fmtBDT(row.base) + "</td>");
-    h.push("<td class=cn>" + row.pct + "</td>");
-    h.push("<td class="r ta tv">" + fmtBDT(row.vat) + "</td>");
-    h.push("<td class="r ta">" + fmtBDT(row.gross) + "</td>");
+    h.push("<td class=\"r ta\">" + fmtBDT(row.base) + "</td>");
+    h.push("<td class=\"cn\">" + row.pct + "</td>");
+    h.push("<td class=\"r ta tv\">" + fmtBDT(row.vat) + "</td>");
+    h.push("<td class=\"r ta\">" + fmtBDT(row.gross) + "</td>");
     h.push("</tr>");
   });
 
   h.push("</tbody>");
-  h.push("<tfoot><tr class=tfr>");
-  h.push("<td colspan=5 class=tfl>&#2478;&#2494;&#2488;&#2495;&#2453; &#2488;&#2480;&#2509;&#2476;&#2478;&#2507;&#2463; Monthly Total (Taka)</td>");
-  h.push("<td class="r ta">" + fmtBDT(totBase) + "</td>");
+  h.push("<tfoot><tr class=\"tfr\">");
+  h.push("<td colspan=\"5\" class=\"tfl\">&#2478;&#2494;&#2488;&#2495;&#2453; &#2488;&#2480;&#2509;&#2476;&#2478;&#2507;&#2463; Monthly Total (Taka)</td>");
+  h.push("<td class=\"r ta\">" + fmtBDT(totBase) + "</td>");
   h.push("<td></td>");
-  h.push("<td class="r ta tv">" + fmtBDT(totVAT) + "</td>");
-  h.push("<td class="r ta">" + fmtBDT(totGross) + "</td>");
+  h.push("<td class=\"r ta tv\">" + fmtBDT(totVAT) + "</td>");
+  h.push("<td class=\"r ta\">" + fmtBDT(totGross) + "</td>");
   h.push("</tr></tfoot></table>");
 
-  h.push("<div style="font-size:10px;color:#8B949E;padding:8px 2px;border-top:1px solid #21262D;margin-top:4px">");
+  h.push("<div style=\"font-size:10px;color:#8B949E;padding:8px 2px;border-top:1px solid #21262D;margin-top:4px\">");
   h.push("Generated: " + (new Date().toLocaleString()) + " &bull; ");
   h.push("Powered by <strong>INSPIRON TECH</strong> &bull; ");
-  h.push("<a href="https://inspiron.tech" target="_blank" style="color:#00D2FF">inspiron.tech</a> &bull; ");
+  h.push("<a href=\"https://inspiron.tech\" target=\"_blank\" style=\"color:#00D2FF\">inspiron.tech</a> &bull; ");
   h.push("Bangladesh NBR VAT Act 2012 &bull; managerio-vat-bd v1.0");
   h.push("</div></div>");
 
@@ -446,6 +468,13 @@ function renderMushak63(invoices, month, year, sd, ed, bizName, bizBIN) {
     "Output VAT: BDT " + fmtBDT(totVAT) + " | " +
     "Warnings: " + warnCount
   );
+
+  // Auto-resize iframe in Manager.io
+  window.parent.postMessage({
+    type: "resize",
+    width: document.documentElement.scrollWidth,
+    height: document.documentElement.scrollHeight + 40
+  }, "*");
 }
 </script>
 </body>
