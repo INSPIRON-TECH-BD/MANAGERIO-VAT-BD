@@ -41,5 +41,5 @@ export const getPeriodRange = (month: number, year: number) => {
   const nextMonth = month === 12 ? 1 : month + 1;
   const nextYear = month === 12 ? year + 1 : year;
   const dueDate = `${nextYear}-${nextMonth.toString().padStart(2, "0")}-15`;
-  return { startDate, endDate, dueDate };
+  return { month, year, startDate, endDate, dueDate };
 };
