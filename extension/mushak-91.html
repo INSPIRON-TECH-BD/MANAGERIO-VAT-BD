@@ -114,7 +114,6 @@
             text-align: center;
         }
         
-        /* Print Styles */
         @media print {
             body { background: white; color: black; padding: 0; }
             .controls, button, .no-print { display: none !important; }
@@ -169,35 +168,23 @@
         <div id="status" class="status"></div>
 
         <div id="result" class="result" style="display:none;">
-            <!-- Populated by JS -->
         </div>
     </div>
 
     <script>
-        // ==================== INLINE HELPERS ====================
         function fmtBDT(amount) {
             if (typeof amount !== 'number') return '0.00';
-            return amount.toLocaleString('en-IN', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            });
+            return amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
-        
         function escHtml(str) {
-            return String(str).replace(/[&<>"']/g, m => ({
-                '&': '&amp;', '<': '&lt;', '>': '&gt;',
-                '"': '&quot;', "'": '&#39;'
-            }[m]));
+            return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
         }
-        
         function pad(n) { return n < 10 ? '0' + n : n; }
-        
         function setStatus(msg, type = 'info') {
             const el = document.getElementById('status');
             el.innerHTML = `<span style="color:${type==='success'?'#00d4aa':type==='error'?'#ff4d4d':'#aaa'}">${escHtml(msg)}</span>`;
         }
 
-        // ==================== API3 CLIENT (minimal) ====================
         let apiEndpoint = null;
         let context = null;
 
@@ -215,9 +202,7 @@
         }
 
         async function initAPI() {
-            // Request context
             window.parent.postMessage({ type: "context-request" }, "*");
-            
             return new Promise((resolve) => {
                 const handler = async (e) => {
                     if (e.source !== window.parent) return;
@@ -234,72 +219,42 @@
 
         async function apiGet(path, params = {}) {
             if (!apiEndpoint) await initAPI();
-            
-            const query = Object.keys(params).length 
-                ? '?' + new URLSearchParams(params).toString() 
-                : '';
-            
-            const res = await sendMessage({
-                type: "api-request",
-                path: path,
-                method: "GET",
-                body: null
-            });
-            
+            const query = Object.keys(params).length ? '?' + new URLSearchParams(params).toString() : '';
+            const res = await sendMessage({ type: "api-request", path: path + query, method: "GET", body: null });
             if (res.status !== 200) throw new Error(res.statusText || 'API Error');
             return res.body;
         }
 
-        // ==================== MAIN LOGIC ====================
         async function generateReport() {
             const month = parseInt(document.getElementById('month').value);
             const year = parseInt(document.getElementById('year').value);
-            
             if (!month || !year) return setStatus('Please select month & year', 'error');
-            
             setStatus('Fetching data from Manager.io...');
-            
             try {
-                // Calculate period
                 const startDate = `${year}-${pad(month)}-01`;
                 const endDate = new Date(year, month, 0).toISOString().split('T')[0];
-                
-                // Fetch invoices
                 const [salesData, purchasesData] = await Promise.all([
                     apiGet('/api2/sales-invoices', { startDate, endDate }),
                     apiGet('/api2/purchase-invoices', { startDate, endDate })
                 ]);
-                
                 const salesInvoices = salesData.rows || salesData || [];
                 const purchaseInvoices = purchasesData.rows || purchasesData || [];
-                
-                // Calculate totals
-                let outputVAT = 0;
-                let taxableSales = 0;
+                let outputVAT = 0, taxableSales = 0;
                 salesInvoices.forEach(inv => {
                     taxableSales += parseFloat(inv.total || 0) - parseFloat(inv.taxAmount || 0);
                     outputVAT += parseFloat(inv.taxAmount || 0);
                 });
-                
-                let inputVAT = 0;
-                let taxablePurchases = 0;
+                let inputVAT = 0, taxablePurchases = 0;
                 purchaseInvoices.forEach(inv => {
                     taxablePurchases += parseFloat(inv.total || 0) - parseFloat(inv.taxAmount || 0);
                     inputVAT += parseFloat(inv.taxAmount || 0);
                 });
-                
                 const netVAT = outputVAT - inputVAT;
-                
-                // Next month 15th for filing due date
                 const nextMonth = month === 12 ? 1 : month + 1;
                 const nextYear = month === 12 ? year + 1 : year;
                 const dueDate = `${nextYear}-${pad(nextMonth)}-15`;
-                
-                // Business info
                 const businessName = context?.business?.name || 'Your Business Name';
                 const bin = context?.business?.customFields?.find?.(f => f.label?.toLowerCase().includes('bin'))?.value || 'N/A';
-                
-                // Render result
                 const html = `
                     <h2 class="section-title">Mushak 9.1 – Monthly VAT Return</h2>
                     <div style="display:flex; justify-content:space-between; margin-bottom:20px; font-size:0.95rem;">
@@ -309,24 +264,16 @@
                             <strong>Filing Due:</strong> ${dueDate}
                         </div>
                     </div>
-                    
                     <div class="section-title">Section A – Output VAT (উৎপাদিত ভ্যাট)</div>
-                    <table>
-                        <tr><th>Taxable Sales</th><td style="text-align:right">${fmtBDT(taxableSales)} BDT</td></tr>
-                        <tr><th>Output VAT Amount</th><td style="text-align:right">${fmtBDT(outputVAT)} BDT</td></tr>
-                    </table>
-                    
+                    <table><tr><th>Taxable Sales</th><td style="text-align:right">${fmtBDT(taxableSales)} BDT</td></tr>
+                    <tr><th>Output VAT Amount</th><td style="text-align:right">${fmtBDT(outputVAT)} BDT</td></tr></table>
                     <div class="section-title">Section B – Input VAT Credit (ইনপুট ভ্যাট ক্রেডিট)</div>
-                    <table>
-                        <tr><th>Taxable Purchases</th><td style="text-align:right">${fmtBDT(taxablePurchases)} BDT</td></tr>
-                        <tr><th>Input VAT Amount</th><td style="text-align:right">${fmtBDT(inputVAT)} BDT</td></tr>
-                    </table>
-                    
+                    <table><tr><th>Taxable Purchases</th><td style="text-align:right">${fmtBDT(taxablePurchases)} BDT</td></tr>
+                    <tr><th>Input VAT Amount</th><td style="text-align:right">${fmtBDT(inputVAT)} BDT</td></tr></table>
                     <div class="section-title">Section C – Net VAT Payable</div>
                     <div class="net-payable ${netVAT >= 0 ? 'positive' : 'negative'}">
                         ${netVAT >= 0 ? 'PAYABLE' : 'REFUNDABLE'} : ${fmtBDT(Math.abs(netVAT))} BDT
                     </div>
-                    
                     <div class="footer">
                         Generated on ${new Date().toLocaleString('en-BD')} • 
                         Sales invoices: ${salesInvoices.length} • 
@@ -334,26 +281,16 @@
                         <strong>n-Law 01</strong> • Rounded only at final step
                     </div>
                 `;
-                
                 document.getElementById('result').innerHTML = html;
                 document.getElementById('result').style.display = 'block';
-                
-                // Resize iframe
-                window.parent.postMessage({
-                    type: "resize",
-                    width: document.documentElement.scrollWidth,
-                    height: document.documentElement.scrollHeight + 40
-                }, "*");
-                
+                window.parent.postMessage({ type: "resize", width: document.documentElement.scrollWidth, height: document.documentElement.scrollHeight + 40 }, "*");
                 setStatus('Mushak 9.1 generated successfully ✓', 'success');
-                
             } catch (err) {
                 console.error(err);
                 setStatus('Error: ' + err.message, 'error');
             }
         }
 
-        // ==================== INIT ====================
         function populateYears() {
             const yearSelect = document.getElementById('year');
             const currentYear = new Date().getFullYear();
@@ -368,10 +305,8 @@
 
         window.onload = async () => {
             populateYears();
-            await initAPI();           // handshake with Manager.io
+            await initAPI();
             setStatus('Ready to generate Mushak 9.1', 'success');
-            
-            // Auto-resize on load
             window.parent.postMessage({ type: "resize", width: 1000, height: 700 }, "*");
         };
     </script>
