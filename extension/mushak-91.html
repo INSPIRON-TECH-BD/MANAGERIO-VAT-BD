@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mushak 9.1 - Monthly VAT Return | Manager.io</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+        
+        :root {
+            --bg: #1e1e1e;
+            --card: #2d2d2d;
+            --text: #e0e0e0;
+            --accent: #00d4aa;
+        }
+        
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding: 20px;
+            line-height: 1.5;
+        }
+        
+        .container { max-width: 1000px; margin: 0 auto; }
+        
+        header {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        h1 { font-size: 1.6rem; font-weight: 600; }
+        .subtitle { font-size: 0.95rem; opacity: 0.8; }
+        
+        .controls {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            align-items: end;
+        }
+        
+        .form-group { flex: 1; min-width: 180px; }
+        label { display: block; margin-bottom: 6px; font-size: 0.9rem; opacity: 0.9; }
+        select, button {
+            width: 100%;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        select { background: #3a3a3a; color: var(--text); }
+        
+        button {
+            background: var(--accent);
+            color: #000;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        button:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,212,170,0.3); }
+        
+        .result {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 28px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid #444;
+        }
+        th { background: #252525; font-weight: 500; }
+        
+        .section-title {
+            font-size: 1.2rem;
+            margin: 28px 0 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--accent);
+        }
+        
+        .net-payable {
+            font-size: 1.8rem;
+            font-weight: 700;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .positive { background: #00d4aa; color: #000; }
+        .negative { background: #ff4d4d; color: #fff; }
+        
+        .footer {
+            margin-top: 40px;
+            font-size: 0.85rem;
+            opacity: 0.7;
+            text-align: center;
+        }
+        
+        /* Print Styles */
+        @media print {
+            body { background: white; color: black; padding: 0; }
+            .controls, button, .no-print { display: none !important; }
+            .result { box-shadow: none; }
+            .net-payable { border: 3px solid #000; }
+        }
+        
+        .status { margin-top: 12px; font-size: 0.9rem; min-height: 22px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>Mushak 9.1</h1>
+                <div class="subtitle">Monthly VAT Return • ভ্যাট মাসিক রিটার্ন</div>
+            </div>
+            <div style="text-align:right">
+                <div style="font-size:0.9rem; opacity:0.8;">INSPIRON TECH BD</div>
+                <div style="font-size:1.1rem; font-weight:600;">v1.0</div>
+            </div>
+        </header>
+
+        <div class="controls">
+            <div class="form-group">
+                <label>Month / মাস</label>
+                <select id="month">
+                    <option value="1">January / জানুয়ারি</option>
+                    <option value="2">February / ফেব্রুয়ারি</option>
+                    <option value="3">March / মার্চ</option>
+                    <option value="4">April / এপ্রিল</option>
+                    <option value="5">May / মে</option>
+                    <option value="6">June / জুন</option>
+                    <option value="7">July / জুলাই</option>
+                    <option value="8">August / আগস্ট</option>
+                    <option value="9">September / সেপ্টেম্বর</option>
+                    <option value="10">October / অক্টোবর</option>
+                    <option value="11">November / নভেম্বর</option>
+                    <option value="12">December / ডিসেম্বর</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Year / বছর</label>
+                <select id="year"></select>
+            </div>
+            <div class="form-group" style="flex:0 0 180px;">
+                <label>&nbsp;</label>
+                <button onclick="generateReport()">Generate Report • রিপোর্ট তৈরি করুন</button>
+            </div>
+        </div>
+
+        <div id="status" class="status"></div>
+
+        <div id="result" class="result" style="display:none;">
+            <!-- Populated by JS -->
+        </div>
+    </div>
+
+    <script>
+        // ==================== INLINE HELPERS ====================
+        function fmtBDT(amount) {
+            if (typeof amount !== 'number') return '0.00';
+            return amount.toLocaleString('en-IN', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+        
+        function escHtml(str) {
+            return String(str).replace(/[&<>"']/g, m => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;',
+                '"': '&quot;', "'": '&#39;'
+            }[m]));
+        }
+        
+        function pad(n) { return n < 10 ? '0' + n : n; }
+        
+        function setStatus(msg, type = 'info') {
+            const el = document.getElementById('status');
+            el.innerHTML = `<span style="color:${type==='success'?'#00d4aa':type==='error'?'#ff4d4d':'#aaa'}">${escHtml(msg)}</span>`;
+        }
+
+        // ==================== API3 CLIENT (minimal) ====================
+        let apiEndpoint = null;
+        let context = null;
+
+        function sendMessage(msg) {
+            return new Promise((resolve) => {
+                const requestId = 'req_' + Math.random().toString(36).substring(2);
+                const handler = (e) => {
+                    if (e.source !== window.parent || e.data.requestId !== requestId) return;
+                    window.removeEventListener('message', handler);
+                    resolve(e.data);
+                };
+                window.addEventListener('message', handler);
+                window.parent.postMessage({ ...msg, requestId }, "*");
+            });
+        }
+
+        async function initAPI() {
+            // Request context
+            window.parent.postMessage({ type: "context-request" }, "*");
+            
+            return new Promise((resolve) => {
+                const handler = async (e) => {
+                    if (e.source !== window.parent) return;
+                    if (e.data.type === "context-response") {
+                        window.removeEventListener('message', handler);
+                        context = e.data.body;
+                        apiEndpoint = context.apiEndpoint || "https://argus.accounts.manager.io";
+                        resolve();
+                    }
+                };
+                window.addEventListener('message', handler);
+            });
+        }
+
+        async function apiGet(path, params = {}) {
+            if (!apiEndpoint) await initAPI();
+            
+            const query = Object.keys(params).length 
+                ? '?' + new URLSearchParams(params).toString() 
+                : '';
+            
+            const res = await sendMessage({
+                type: "api-request",
+                path: path,
+                method: "GET",
+                body: null
+            });
+            
+            if (res.status !== 200) throw new Error(res.statusText || 'API Error');
+            return res.body;
+        }
+
+        // ==================== MAIN LOGIC ====================
+        async function generateReport() {
+            const month = parseInt(document.getElementById('month').value);
+            const year = parseInt(document.getElementById('year').value);
+            
+            if (!month || !year) return setStatus('Please select month & year', 'error');
+            
+            setStatus('Fetching data from Manager.io...');
+            
+            try {
+                // Calculate period
+                const startDate = `${year}-${pad(month)}-01`;
+                const endDate = new Date(year, month, 0).toISOString().split('T')[0];
+                
+                // Fetch invoices
+                const [salesData, purchasesData] = await Promise.all([
+                    apiGet('/api2/sales-invoices', { startDate, endDate }),
+                    apiGet('/api2/purchase-invoices', { startDate, endDate })
+                ]);
+                
+                const salesInvoices = salesData.rows || salesData || [];
+                const purchaseInvoices = purchasesData.rows || purchasesData || [];
+                
+                // Calculate totals
+                let outputVAT = 0;
+                let taxableSales = 0;
+                salesInvoices.forEach(inv => {
+                    taxableSales += parseFloat(inv.total || 0) - parseFloat(inv.taxAmount || 0);
+                    outputVAT += parseFloat(inv.taxAmount || 0);
+                });
+                
+                let inputVAT = 0;
+                let taxablePurchases = 0;
+                purchaseInvoices.forEach(inv => {
+                    taxablePurchases += parseFloat(inv.total || 0) - parseFloat(inv.taxAmount || 0);
+                    inputVAT += parseFloat(inv.taxAmount || 0);
+                });
+                
+                const netVAT = outputVAT - inputVAT;
+                
+                // Next month 15th for filing due date
+                const nextMonth = month === 12 ? 1 : month + 1;
+                const nextYear = month === 12 ? year + 1 : year;
+                const dueDate = `${nextYear}-${pad(nextMonth)}-15`;
+                
+                // Business info
+                const businessName = context?.business?.name || 'Your Business Name';
+                const bin = context?.business?.customFields?.find?.(f => f.label?.toLowerCase().includes('bin'))?.value || 'N/A';
+                
+                // Render result
+                const html = `
+                    <h2 class="section-title">Mushak 9.1 – Monthly VAT Return</h2>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:20px; font-size:0.95rem;">
+                        <div><strong>Business:</strong> ${escHtml(businessName)}<br><strong>BIN:</strong> ${bin}</div>
+                        <div style="text-align:right">
+                            <strong>Period:</strong> ${document.getElementById('month').options[month-1].text} ${year}<br>
+                            <strong>Filing Due:</strong> ${dueDate}
+                        </div>
+                    </div>
+                    
+                    <div class="section-title">Section A – Output VAT (উৎপাদিত ভ্যাট)</div>
+                    <table>
+                        <tr><th>Taxable Sales</th><td style="text-align:right">${fmtBDT(taxableSales)} BDT</td></tr>
+                        <tr><th>Output VAT Amount</th><td style="text-align:right">${fmtBDT(outputVAT)} BDT</td></tr>
+                    </table>
+                    
+                    <div class="section-title">Section B – Input VAT Credit (ইনপুট ভ্যাট ক্রেডিট)</div>
+                    <table>
+                        <tr><th>Taxable Purchases</th><td style="text-align:right">${fmtBDT(taxablePurchases)} BDT</td></tr>
+                        <tr><th>Input VAT Amount</th><td style="text-align:right">${fmtBDT(inputVAT)} BDT</td></tr>
+                    </table>
+                    
+                    <div class="section-title">Section C – Net VAT Payable</div>
+                    <div class="net-payable ${netVAT >= 0 ? 'positive' : 'negative'}">
+                        ${netVAT >= 0 ? 'PAYABLE' : 'REFUNDABLE'} : ${fmtBDT(Math.abs(netVAT))} BDT
+                    </div>
+                    
+                    <div class="footer">
+                        Generated on ${new Date().toLocaleString('en-BD')} • 
+                        Sales invoices: ${salesInvoices.length} • 
+                        Purchase invoices: ${purchaseInvoices.length}<br>
+                        <strong>n-Law 01</strong> • Rounded only at final step
+                    </div>
+                `;
+                
+                document.getElementById('result').innerHTML = html;
+                document.getElementById('result').style.display = 'block';
+                
+                // Resize iframe
+                window.parent.postMessage({
+                    type: "resize",
+                    width: document.documentElement.scrollWidth,
+                    height: document.documentElement.scrollHeight + 40
+                }, "*");
+                
+                setStatus('Mushak 9.1 generated successfully ✓', 'success');
+                
+            } catch (err) {
+                console.error(err);
+                setStatus('Error: ' + err.message, 'error');
+            }
+        }
+
+        // ==================== INIT ====================
+        function populateYears() {
+            const yearSelect = document.getElementById('year');
+            const currentYear = new Date().getFullYear();
+            for (let y = currentYear - 2; y <= currentYear + 1; y++) {
+                const opt = document.createElement('option');
+                opt.value = y;
+                opt.textContent = y;
+                if (y === currentYear) opt.selected = true;
+                yearSelect.appendChild(opt);
+            }
+        }
+
+        window.onload = async () => {
+            populateYears();
+            await initAPI();           // handshake with Manager.io
+            setStatus('Ready to generate Mushak 9.1', 'success');
+            
+            // Auto-resize on load
+            window.parent.postMessage({ type: "resize", width: 1000, height: 700 }, "*");
+        };
+    </script>
+</body>
+</html>

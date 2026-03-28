@@ -134,6 +134,37 @@ chore(scope): Tooling / deps
 Save to: SECTOR-ALPHA-COMMAND/INTELLIGENCE-CORE/SESSION-LOGS/
 Format: YYYY-MM-DD_MANAGERIO-VAT-BD-BRIEF-TITLE.md
 
+## ZED AGENT RULES
+
+BRAINS
+- HX = ⚡ HX — Fast (Haiku 4.5) → All coding + docs
+- ST = 🔬 ST — Think (Sonnet)   → VAT / Mushak logic ONLY
+- SD = 🧠 SD — Deep (Sonnet)    → Architecture / strategy ONLY
+- GF = 🪙 GF — Scan (Gemini)    → Long external/vault docs ONLY
+
+PROFILES
+- SC = SCAN  → read-only tools
+- BU = BUILD → full edit tools
+- CH = CHAT  → no file tools
+
+THREADS
+- Name: [BRAIN]-[PROJECT]-[SLUG]
+- One feature per thread
+- Close after done; update CLAUDE.md + progress.md
+
+SESSION START
+- Run /start in new thread.
+
+SESSION END
+- Run /done, commit, push, close thread.
+
+NEVER
+- Use Sonnet/Think for simple edits (use HX).
+- Attach old chat transcripts as context.
+- Use 1M context in Zed.
+- Mix unrelated features in one thread.
+- Store secrets in repo.
+
 ---
 
 _OPERATION-NEURAL-BRIDGE · SECTOR-CHARLIE-CONTRACTS_
