@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manager.io VAT Extensions | INSPIRON TECH BD</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+        
+        :root {
+            --bg-base: #0a0a0f;
+            --bg-surface: rgba(255, 255, 255, 0.03);
+            --bg-surface-hover: rgba(255, 255, 255, 0.08);
+            --border-subtle: rgba(255, 255, 255, 0.1);
+            --accent-cyan: #00D2FF;
+            --accent-gold: #FFD700;
+            --accent-green: #00A86B;
+            --text-primary: #ffffff;
+            --text-secondary: #8B949E;
+            --font-main: 'Inter', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Ambient Background Glows */
+        .glow {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: 0;
+            opacity: 0.15;
+            animation: pulse 8s infinite alternate ease-in-out;
+        }
+        .glow-1 {
+            top: -10%; left: -5%;
+            width: 400px; height: 400px;
+            background: var(--accent-cyan);
+        }
+        .glow-2 {
+            bottom: -5%; right: -5%;
+            width: 350px; height: 350px;
+            background: var(--accent-gold);
+            animation-delay: -4s;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.9); opacity: 0.1; }
+            100% { transform: scale(1.1); opacity: 0.25; }
+        }
+
+        /* Container */
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 90%;
+            max-width: 900px;
+            padding: 40px;
+            margin: 40px auto;
+            background: rgba(15, 15, 20, 0.6);
+            border: 1px solid var(--border-subtle);
+            border-radius: 24px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .brand-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 100px;
+            margin-bottom: 24px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent-gold);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+        .brand-badge .dot {
+            width: 8px; height: 8px;
+            background: var(--accent-gold);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent-gold);
+        }
+
+        h1 {
+            font-size: 42px;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #ffffff 0%, #b3b3b3 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+        }
+
+        p.subtitle {
+            font-size: 16px;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Grid Framework for Extensions */
+        .ext-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .ext-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 32px 24px;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+            group: hover;
+        }
+
+        .ext-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 3px;
+            background: transparent;
+            transition: all 0.3s;
+        }
+        .ext-card:hover::before {
+            background: var(--accent-cyan);
+            box-shadow: 0 0 20px var(--accent-cyan);
+        }
+
+        .ext-card.gold:hover::before { background: var(--accent-gold); box-shadow: 0 0 20px var(--accent-gold); }
+        .ext-card.green:hover::before { background: var(--accent-green); box-shadow: 0 0 20px var(--accent-green); }
+
+        .ext-card:hover {
+            transform: translateY(-8px);
+            background: var(--bg-surface-hover);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .ext-icon {
+            font-size: 40px;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+        .ext-card:hover .ext-icon {
+            transform: scale(1.1);
+        }
+
+        .ext-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .ext-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Install Code Snippet */
+        .install-box {
+            margin-top: 48px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .install-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .install-info .icon {
+            font-size: 24px;
+        }
+        .install-text h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        .install-text p {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .btn-install {
+            padding: 10px 24px;
+            background: var(--accent-cyan);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        .btn-install:hover {
+            background: #fff;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        footer {
+            margin-top: 60px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-secondary);
+            padding-bottom: 30px;
+        }
+        footer a {
+            color: var(--accent-cyan);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        footer a:hover {
+            color: #fff;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 32px; }
+            .ext-card { padding: 24px 16px; }
+            .install-box { flex-direction: column; text-align: center; gap: 20px; }
+            .install-info { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="glow glow-1"></div>
+    <div class="glow glow-2"></div>
+
+    <div class="container">
+        <header>
+            <div class="brand-badge">
+                <div class="dot"></div>
+                INSPIRON TECH BD
+            </div>
+            <h1>Manager.io VAT Engine</h1>
+            <p class="subtitle">Official Bangladesh NBR VAT Act 2012 compliance extensions. Install directly into your Manager.io application via the zero-footprint API3 protocol.</p>
+        </header>
+
+        <div class="ext-grid">
+            <!-- Mushak 6.3 -->
+            <a href="extension/mushak-63.html" class="ext-card gold">
+                <div class="ext-icon">🧾</div>
+                <h3 class="ext-title">Mushak 6.3</h3>
+                <p class="ext-desc">Output VAT Register (Sales). Auto-generates your sales register complying with section 6.3 protocols.</p>
+            </a>
+
+            <!-- Mushak 6.4 -->
+            <a href="extension/mushak-64.html" class="ext-card cyan">
+                <div class="ext-icon">📦</div>
+                <h3 class="ext-title">Mushak 6.4</h3>
+                <p class="ext-desc">Input VAT Register (Purchases). Logs all incoming vendor invoices for input credit processing.</p>
+            </a>
+
+            <!-- Mushak 9.1 -->
+            <a href="extension/mushak-91.html" class="ext-card green">
+                <div class="ext-icon">📈</div>
+                <h3 class="ext-title">Mushak 9.1</h3>
+                <p class="ext-desc">Monthly VAT Return. Comprehensive statement computing net payable/refundable metrics.</p>
+            </a>
+        </div>
+
+        <div class="install-box">
+            <div class="install-info">
+                <div class="icon">⚡</div>
+                <div class="install-text">
+                    <h4>Direct Application Installation</h4>
+                    <p>Copy any URL above and paste it inside Manager.io > Settings > Extensions</p>
+                </div>
+            </div>
+            <a href="https://github.com/INSPIRON-TECH-BD/MANAGERIO-VAT-BD" target="_blank" class="btn-install">View GitHub Repo</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>Built under n-Law Protocols by INSPIRON TECH BD. &copy; 2026.<br>Zero Approximation Policy enforced. <a href="https://inspiron.tech">Visit our Intelligence HQ</a></p>
+    </footer>
+
+</body>
+</html>
