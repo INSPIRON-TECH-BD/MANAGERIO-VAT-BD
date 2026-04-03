@@ -1,4 +1,4 @@
-<!-- CLAUDE.md · MANAGERIO-VAT-BD · Read every session. No exceptions. -->
+﻿<!-- CLAUDE.md · MANAGERIO-VAT-BD · Read every session. No exceptions. -->
 
 # MANAGERIO-VAT-BD — AGENT CONTEXT
 
@@ -22,8 +22,8 @@ Two deployments from one codebase:
 - Cloud passes context via window.postMessage (apiEndpoint = cloud URL, not localhost)
 - Extension must listen for postMessage — never hardcode localhost:5000
 - Test URL: install extension via Manager.io Settings > Extensions > Add URL
-- Repo: github.com/INSPIRON-TECH-BD/MANAGERIO-VAT-BD
-- Extension URL (live): https://inspiron-tech-bd.github.io/MANAGERIO-VAT-BD/
+- Repo: github.com/INSPIRONTECH/MANAGERIO-VAT-BD
+- Extension URL (live): https://INSPIRONTECH.github.io/MANAGERIO-VAT-BD/
 - Status: mushak-63.html v1.0 live | mushak-64.html in progress
 
 ## PROJECT STRUCTURE
